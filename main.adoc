@@ -1,0 +1,221 @@
+= Programmation SQL depuis une application PHP
+Franck Silvestre - franck.silvestre@iut-rodez.fr
+v1.0, 2022-07-15 
+:icons: font
+:toc:
+:sectnums:
+
+== Introduction
+
+=== Liens utils
+
+- http://php.net/manual/fr/book.pdo.php 
+- https://phpdelusions.net/pdo 
+
+=== PDO - PHP _Data Objects_
+
+* Couche d’abstraction d’accès à la base de données
+** Interface unifiée pour un accès à différentes bases de données (BDD)
+** MySQL, PostgreSQL, Oracle, MS SQL Server, etc.
+
+* Bénéfices
+** sécurité : énoncés préparés (prepared statements) 
+** utilisabilité : fonctions d’automatisation des opérations routinières
+
+* PDO vs librairies ORM
+** PDO n’est pas un outil d’ORM
+** PDO s’appuie sur SQL
+** PDO est plutôt l’équivalent de JDBC en Java
+
+== Se connecter à la base
+
+=== Le _data source name_
+
+* Fourniture d’un Data Source Name (DSN) pour accéder à la base de données (BDD)
+
+* Le DSN encapsule dans une chaîne de caractère les informations relatives…
+** au _driver_ (pilote) de la BDD
+** au host (nom ou adresse du serveur hébergeant la BDD)
+** au nom du schema (nom de la BDD)
+** au jeu de caractère utilisé (charset)
+** et si nécessaire, le port d’écoute, l’identifiant de la socket unix 
+
+* Format type d’un DSN à travers un exemple
+
+[source,php]
+----
+    "mysql:host=localhost;dbname=MyActivities;port=8889;charset=utf8" <1>
+----
+<1> L'identification du pilote de la BDD suivi du caractère "*:*". Puis les paires clés-valeurs sont séparées par le caractère "*;*". 
+
+=== Les éléments d’authentification et autres options
+
+* Fourniture d’un nom d’utilisateur et d’un mot de passe
+* Autres options dans un tableau associatif
+* Tous les éléments de spécifications servent à la construction d’un objet de type PDO
+
+=== Exemple
+
+[source,php]
+----
+$host = 'localhost';
+$db = 'my_activities';
+$user = 'root';
+$pass = 'root';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset"; <1>
+
+$options = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+]; <2>
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options); <3>
+} catch (PDOException $e) {
+    throw new PDOException($e->getMessage(), (int)$e->getCode());
+}
+----
+<1> Création du _data source name_
+<2> Spécifications complémentaires de la connexion dans un tableau associatif
+<3> Création de l'objet PDO encapsulant le canal de connexion à la BDD **dans un block _try...catch_**
+
+[WARNING]
+====
+L’ouverture d’une connexion à la base est très couteuse.
+
+* Nécessite de minimiser le nombre d’ouverture de connexion
+* Nécessite de passer l’objet de type PDO en paramètre des fonctions effectuant les accès à la base.
+==== 
+
+== Exécuter des requêtes sans paramètre
+
+=== PDO::query()
+
+* À utiliser pour des requêtes sans paramètre
+** exemple de requête : "SELECT email FROM users"
+* Retourne un objet de type PDOStatement 
+* Extraction des lignes à partir du PDOStatement retourné
+* Exemple
+
+[source, php]
+----
+$stmt = $pdo->query('SELECT email FROM users'); <1>
+while ($row = $stmt->fetch()) <2>
+{
+    echo $row['email'] . "\n"; <3>
+}
+----
+<1> Création de l'objet statement à partir de l'énoncé SQL
+<2> La méthode _fetch()_ permet de récupérer la prochaine ligne du résultat de la requête dans un tableau associatif.
+<3> Les clés du tableau correspondent aux noms des colonnes spécifiées dans la requête SQL.
+
+== Exécuter des requêtes avec paramètres
+
+=== Prepared statements
+
+* Protection contre les attaques de type « injection de SQL »
+
+IMPORTANT: lire https://phpdelusions.net/sql_injection 
+
+* Mode opératoire
+** Utilisation de places réservées (place holder) dans l’énoncé de la requête pour passer les valeurs des paramètres.
+** Préparation de l’énoncé.
+** Exécution de la requête en fournissant les valeurs des paramètres via un objet dédié (tableau ou tableau associatif).
+
+=== Exemple - Utilisation des espaces réservés
+
+* Espaces réservés identifiés par la position
+
+[source, php]
+----
+$sql = 'SELECT * FROM users WHERE email = ? AND status=?'; <1>
+----
+<1> les points d'interrogation indiquent la position des paramètres
+
+* Espaces réservés nommés
+
+[source, php]
+----
+$sql = 'SELECT * FROM users WHERE email = :email AND status=:status'; <1>
+----
+<1> les identifiants des paramètres sont préfixés par le caractère "*:*"
+
+[WARNING]
+==== 
+Ne pas construire un énoncé comme cela :
+
+[source, php]
+----
+$sql = "SELECT * FROM users WHERE email = '$email' AND status='$status'"; <1>
+----
+<1> Cette approche est perméable aux attaques par injection de code dans les variables.
+====
+
+=== Préparation de l’énoncé
+
+* Appel de la méthode PDO::prepare()
+* Retourne un objet de type PDOStatement  qui n’est attaché à aucun résultat à ce stade
+* Appel de la méthode PDOStatement::execute() pour exécuter la requête en prenant en paramètre les valeurs des espaces réservés
+
+=== Exemples
+
+==== Avec espaces réservés positionnels
+
+[source, php]
+----
+$stmt = $pdo->prepare('SELECT * FROM users WHERE email = ? AND status=?'); <1>
+$stmt->execute([$email, $status]); <2>
+$user = $stmt->fetch(); <3>
+----
+<1> Création du _statement_ préparé
+<2> Passage d'un *tableau* en paramètre de la méthode _execute_
+<3> Accès à la prochaine ligne du résultat de la requête
+
+==== Avec espaces réservés nommés
+
+[source, php]
+----
+$stmt = $pdo->prepare(‘SELECT * FROM users WHERE email = :email AND status=:status'); 
+$stmt->execute(['email' => $email, 'status' => $status]); <1>
+$user = $stmt->fetch(); 
+----
+<1> Passage d'un *tableau associatif* en paramètre de la méthode _execute_
+
+
+=== Attachement avec explicitation des types
+
+* Les types sont inférés par défaut au moment de l’éxécution.
+* Parfois, il est nécessaire d’expliciter la correspondance de type entre les variables utilisées et les paramètres de l’énoncé préparé
+
+[NOTE]
+====
+À Lire 
+
+* http://php.net/manual/en/pdostatement.bindvalue.php
+* http://php.net/manual/en/pdostatement.bindparam.php 
+==== 
+
+== Exécution multiple
+
+* Possibilité de recycler un énoncé préparé pour plusieurs exécutions
+* Exemple
+
+[source, php]
+----
+$data = [
+    1 => 15,
+    5 =>  18,
+    9 =>  12,
+];
+$stmt = $pdo->prepare <1>('UPDATE users SET grade = grade + ? WHERE id = ?');
+foreach ($data as $id => $grade)
+{
+    $stmt->execute([$grade, $id]);<2>
+}  
+----
+<1> Une seule préparation, un seul _statement_ créé
+<2> Le même _statement_ est réutilisé à chaque itération
+
