@@ -198,7 +198,7 @@ $user = $stmt->fetch();
 * http://php.net/manual/en/pdostatement.bindparam.php 
 ==== 
 
-== Exécution multiple
+=== Exécution multiple
 
 * Possibilité de recycler un énoncé préparé pour plusieurs exécutions
 * Exemple
