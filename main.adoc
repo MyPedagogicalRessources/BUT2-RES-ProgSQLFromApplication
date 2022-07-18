@@ -1,14 +1,14 @@
 = Programmation SQL depuis une application PHP
 :author: Franck Silvestre
-:{version-label}: v1.0 
 :icons: font
 :toc: left
 :sectnums:
 
+ifdef::backend-html5[]
 ++++
 include::licence.html[]
 ++++
-
+endif::[]
 
 
 == Introduction
