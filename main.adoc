@@ -281,3 +281,84 @@ PDO::ATTR_EMULATE_PREPARES   => true # par défaut
 * Résolution de l’énoncé préparé par PDO (dans l’application)
 * 1 aller-retour envoyant la requête SQL « finale »
 
+== Transactions et auto-commit
+
+=== Rappel transaction
+
+Encapsulation d’une succession d’opérations SQL de manière ACID
+
+* Atomique (Atomicity)
+* Cohérente (Consistency)
+* Isolée (Isolation)
+* Durable (Durability)
+
+=== Transactions vs Autocommit
+
+* Auto-commit
+** Chaque requête encapsulée dans une transaction
+* Transactions
+** Nécessaire si besoin d’encapsuler plusieurs opérations
+** Méthodes impliquées
+*** _PDO::beginTransaction()_ pour initier la transaction
+*** _PDO::commit()_ ou _PDO::rollBack()_ pour finir la transaction
+
+WARNING: Certaines systèmes de gestion de bases de données ne supportent pas la gestion des transactions (mais MySql oui)! 
+
+=== Exemple
+
+[source, php]
+----
+try {
+    $pdo->beginTransaction();
+    $stmt = $pdo->prepare("INSERT INTO users (name) VALUES (?)");
+    foreach (['Lisa','Frederic'] as $name)
+    {
+        $stmt->execute([$name]);
+    }
+    $pdo->commit();
+}catch (Exception $e){
+    $pdo->rollBack();
+    throw $e;
+}
+----
+
+IMPORTANT: Ne pas oublier le rollBack en cas de problème pour rétablir la base dans son état cohérent d’avant la transaction !
+
+== La gestion des erreurs
+
+=== Fermeture implicite
+
+PHP clotûre automatiquement la connexion à la BDD à la fin du script.
+
+=== Fermeture explicite
+
+* L’objet PDO doit être détruit
+* Assigner null à toutes les variables référençant l’objet de manière directe ou indirecte.
+
+[source, php]
+----
+$stmt = $pdo-prepare(‘SELECT * FROM users WHERE email = :email AND status=:status');
+$stmt->execute(['email' => $email, 'status' => $status]);
+$user = $stmt->fetch();
+
+$stmt = null; <1>
+$pdo = null; <2>
+----
+<1> l'objet _statement_ référence l'objet PDO ayant servi à établir la connexion. Il est donc nécessaire de positionner la référence au _statement_ à null pour qu'il soit détruit et ne référence plus son PDO.
+<2> La référence au PDO est positionnée à null.
+
+=== Connexion persistente
+
+* Possibilité de configurer une connexion pour qu’elle soit réutilisée par plusieurs scripts.
+* Dans le tableau des options de configuration...
+
+[source, php]
+----
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+    PDO::ATTR_PERSISTENT => true <1>
+];
+----
+<1> Bénéfice assurée en terme de performance : ouvrir une nouvelle connexion à une base de données est très couteux en comparaison à la réutilisation d'une connexion déjà ouverte !
