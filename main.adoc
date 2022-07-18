@@ -243,8 +243,7 @@ $count_deleted = $stmt->rowCount(); <1>
 
 === Mode « émulation » vs mode « natif »
 
-Rappel 
-
+.Rappel 
 [source, php]
 ----
 $host = 'localhost';
