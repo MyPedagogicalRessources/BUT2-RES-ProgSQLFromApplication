@@ -329,6 +329,65 @@ IMPORTANT: Ne pas oublier le rollBack en cas de problème pour rétablir la base
 
 == La gestion des erreurs
 
+=== Configurer la gestion des erreurs
+
+Rappel...
+
+[source, php]
+----
+$host = 'localhost';
+$db   = ‘my-activities’;
+$user = 'root';
+$pass = 'root';
+$charset = ‘utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, <1>
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+try {
+     $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (PDOException $e) {
+     throw new PDOException($e->getMessage(), (int)$e->getCode());
+}
+----
+<1> Attribut permettant de spécifier le mode de gestion d'erreurs
+
+=== Trois stratégies de gestion d'erreurs
+
+* `PDO::ERRMODE_SILENT`
+** Mise à jour des objets PDOStatement et PDO concernés avec les informations concernant l’erreur
+** Utilisation respectivement des méthodes `PDOStatement::errorCode()`, `PDOStatement::infoCode()` et `PDO::errorCode()`, `PDO::infoCode()`` pour récupérer l’information
+* `PDO::ERRMODE_WARNING`
+** `PDO::ERRMODE_SILENT` + émission d’un message `E_WARNING`
+** Utile en phase de débguage/test
+* `PDO::ERRMODE_EXCEPTION`
+** `PDO::ERRMODE_SILENT` + lever d’une `PDOException` décrivant l’erreur (code et information)
+** Gestion plus fine des erreurs ; gestion élégante des erreurs liées aux transactions (rollBack dans le bloc catch)
+
+=== Exemple 
+
+[source, php]
+----
+try {
+    $pdo->beginTransaction();
+    $stmt = $pdo->prepare("INSERT INTO users (name) VALUES (?)");
+    foreach (['Lisa','Frederic'] as $name)
+    {
+        $stmt->execute([$name]);
+    }
+    $pdo->commit();
+}catch (Exception $e){
+    $pdo->rollBack(); <1>
+    throw $e;
+}
+----
+<1> Le mode `PDO::ERRMODE_EXCEPTION` permet de gérer proprement une erreur liée à la BDD en déclenchant un `rollBack()` dans le bloc `catch`.
+
+== Fermer la connexion à la base
+
 === Fermeture implicite
 
 PHP clotûre automatiquement la connexion à la BDD à la fin du script.
