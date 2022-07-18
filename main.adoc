@@ -80,7 +80,7 @@ try {
 ----
 <1> Création du _data source name_
 <2> Spécifications complémentaires de la connexion dans un tableau associatif
-<3> Création de l'objet PDO encapsulant le canal de connexion à la BDD **dans un block _try...catch_**
+<3> Création de l'objet PDO encapsulant le canal de connexion à la BDD **dans un block `try...catch`**
 
 [WARNING]
 ====
@@ -109,7 +109,7 @@ while ($row = $stmt->fetch()) <2>
 }
 ----
 <1> Création de l'objet statement à partir de l'énoncé SQL
-<2> La méthode _fetch()_ permet de récupérer la prochaine ligne du résultat de la requête dans un tableau associatif.
+<2> La méthode `fetch()` permet de récupérer la prochaine ligne du résultat de la requête dans un tableau associatif.
 <3> Les clés du tableau correspondent aux noms des colonnes spécifiées dans la requête SQL.
 
 == Exécuter des requêtes avec paramètres
@@ -127,7 +127,7 @@ IMPORTANT: lire https://phpdelusions.net/sql_injection
 
 === Exemple - Utilisation des espaces réservés
 
-* Espaces réservés identifiés par la position
+==== Espaces réservés identifiés par la position
 
 [source, php]
 ----
@@ -135,13 +135,15 @@ $sql = 'SELECT * FROM users WHERE email = ? AND status=?'; <1>
 ----
 <1> les points d'interrogation indiquent la position des paramètres
 
-* Espaces réservés nommés
+==== Espaces réservés nommés
 
 [source, php]
 ----
 $sql = 'SELECT * FROM users WHERE email = :email AND status=:status'; <1>
 ----
 <1> les identifiants des paramètres sont préfixés par le caractère "*:*"
+
+==== L'attrape débutant 
 
 [WARNING]
 ==== 
@@ -171,7 +173,7 @@ $stmt->execute([$email, $status]); <2>
 $user = $stmt->fetch(); <3>
 ----
 <1> Création du _statement_ préparé
-<2> Passage d'un *tableau* en paramètre de la méthode _execute_
+<2> Passage d'un *tableau* en paramètre de la méthode `execute`
 <3> Accès à la prochaine ligne du résultat de la requête
 
 ==== Avec espaces réservés nommés
@@ -182,7 +184,7 @@ $stmt = $pdo->prepare(‘SELECT * FROM users WHERE email = :email AND�
 $stmt->execute(['email' => $email, 'status' => $status]); <1>
 $user = $stmt->fetch(); 
 ----
-<1> Passage d'un *tableau associatif* en paramètre de la méthode _execute_
+<1> Passage d'un *tableau associatif* en paramètre de la méthode `execute`
 
 
 === Attachement avec explicitation des types
@@ -237,7 +239,7 @@ $stmt = $pdo->prepare("DELETE FROM books WHERE category = ?");
 $stmt->execute([$category]);
 $count_deleted = $stmt->rowCount(); <1>
 ----
-<1> La méthode _rowCount()_ permete de récupérer le nombre de lignes affectées par la requête.
+<1> La méthode `rowCount()` permet de récupérer le nombre de lignes affectées par la requête.
 
 === Mode « émulation » vs mode « natif »
 
@@ -299,8 +301,8 @@ Encapsulation d’une succession d’opérations SQL de manière ACID
 * Transactions
 ** Nécessaire si besoin d’encapsuler plusieurs opérations
 ** Méthodes impliquées
-*** _PDO::beginTransaction()_ pour initier la transaction
-*** _PDO::commit()_ ou _PDO::rollBack()_ pour finir la transaction
+*** `PDO::beginTransaction()` pour initier la transaction
+*** `PDO::commit()` ou `PDO::rollBack()` pour finir la transaction
 
 WARNING: Certaines systèmes de gestion de bases de données ne supportent pas la gestion des transactions (mais MySql oui)! 
 
