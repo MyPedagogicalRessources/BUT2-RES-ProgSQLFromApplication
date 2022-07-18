@@ -2,7 +2,7 @@
 Franck Silvestre - franck.silvestre@iut-rodez.fr
 v1.0, 2022-07-15 
 :icons: font
-:toc:
+:toc: left
 :sectnums:
 
 == Introduction
