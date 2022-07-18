@@ -158,9 +158,9 @@ $sql = "SELECT * FROM users WHERE email = '$email' AND status='$statu
 
 === Préparation de l’énoncé
 
-* Appel de la méthode PDO::prepare()
-* Retourne un objet de type PDOStatement  qui n’est attaché à aucun résultat à ce stade
-* Appel de la méthode PDOStatement::execute() pour exécuter la requête en prenant en paramètre les valeurs des espaces réservés
+* Appel de la méthode `PDO::prepare()`
+* Retourne un objet de type `PDOStatement`  qui n’est attaché à aucun résultat à ce stade
+* Appel de la méthode `PDOStatement::execute()` pour exécuter la requête en prenant en paramètre les valeurs des espaces réservés
 
 === Exemples
 
