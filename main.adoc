@@ -86,7 +86,7 @@ try {
 ====
 L’ouverture d’une connexion à la base est très couteuse.
 
-* Nécessite de minimiser le nombre d’ouverture de connexion
+* Nécessite de minimiser le nombre d’ouvertures de connexions
 * Nécessite de passer l’objet de type PDO en paramètre des fonctions effectuant les accès à la base.
 ==== 
 
@@ -210,7 +210,7 @@ $data = [
     5 =>  18,
     9 =>  12,
 ];
-$stmt = $pdo->prepare <1>('UPDATE users SET grade = grade + ? WHERE id = ?');
+$stmt = $pdo->prepare ('UPDATE users SET grade = grade + ? WHERE id = ?'); <1>
 foreach ($data as $id => $grade)
 {
     $stmt->execute([$grade, $id]);<2>
@@ -255,8 +255,8 @@ $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-]; <1>
+    PDO::ATTR_EMULATE_PREPARES   => false, <1>
+]; 
 try {
      $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
@@ -309,18 +309,21 @@ WARNING: Certaines systèmes de gestion de bases de données ne supportent pas l
 [source, php]
 ----
 try {
-    $pdo->beginTransaction();
+    $pdo->beginTransaction(); <1>
     $stmt = $pdo->prepare("INSERT INTO users (name) VALUES (?)");
     foreach (['Lisa','Frederic'] as $name)
     {
         $stmt->execute([$name]);
     }
-    $pdo->commit();
+    $pdo->commit(); <2>
 }catch (Exception $e){
-    $pdo->rollBack();
+    $pdo->rollBack(); <3>
     throw $e;
 }
 ----
+<1> Ouverture de la transaction
+<2> Marque la fin de la transaction en cours pour rendre ses changements permanents.
+<3> Annule la transaction en cours, en annulant toutes ses modifications.
 
 IMPORTANT: Ne pas oublier le rollBack en cas de problème pour rétablir la base dans son état cohérent d’avant la transaction !
 
@@ -361,4 +364,4 @@ $options = [
     PDO::ATTR_PERSISTENT => true <1>
 ];
 ----
-<1> Bénéfice assurée en terme de performance : ouvrir une nouvelle connexion à une base de données est très couteux en comparaison à la réutilisation d'une connexion déjà ouverte !
+<1> Bénéfice assurée en terme de performance : ouvrir une nouvelle connexion à une base de données est très couteux en comparaison de la réutilisation d'une connexion déjà ouverte !
