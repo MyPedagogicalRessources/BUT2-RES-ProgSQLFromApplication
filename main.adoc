@@ -1,9 +1,15 @@
 = Programmation SQL depuis une application PHP
-Franck Silvestre - franck.silvestre@iut-rodez.fr
-v1.0, 2022-07-15 
+:author: Franck Silvestre
+:{version-label}: v1.0 
 :icons: font
 :toc: left
 :sectnums:
+
+++++
+include::licence.html[]
+++++
+
+
 
 == Introduction
 
@@ -44,7 +50,7 @@ v1.0, 2022-07-15
 
 [source,php]
 ----
-    "mysql:host=localhost;dbname=MyActivities;port=8889;charset=utf8" <1>
+    $dsn = "mysql:host=localhost;dbname=MyActivities;port=8889;charset=utf8" <1>
 ----
 <1> L'identification du pilote de la BDD suivi du caractère "*:*". Puis les paires clés-valeurs sont séparées par le caractère "*;*". 
 
