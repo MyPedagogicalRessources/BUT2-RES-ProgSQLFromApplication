@@ -1,0 +1,41 @@
+= Design process
+:author: Franck Silvestre
+:icons: font
+:toc: left
+:sectnums:
+
+== Indentification des tâches 
+
+L'obbjectif de cette unité d'enseignement est de faire monter en compétence les étudiants sur la capacité à utiliser SQL depuis une application.
+Le contexte authentique retenu est le développement d'une application Web en PHP.
+
+NOTE: Avant de descendre au niveau de la tâche authentique, besoin de spécifier le contexte authentique/professionnel de plus haut niveau.
+
+NOTE: dans le contexte professionnel, on se place dans un contexte de bonne pratique de dev : faut-il partir directement sur une approche MVC ?
+
+=== Niveau de complexité 1
+
+* Accès à la base de données en lecture seule sans paramètre dans la requête.
+* Accès à la base de données en écriture avec une seule opération sans paramètre dans la requête.
+
+Dans les 2 cas, c'est la même démarche : connexion à la base, conception et exécution de la requête SQL sans se préoccuper de transactions (1 seule opération en écriture) ou d'injection de code (pas de paramètre).
+
+=== Niveau de complexité 2
+
+* Accès à la base de données en lecture seule avec paramètres (pagination et autres)
+* Accès à la base de données en écriture avec une seule opération avec paramètre
+
+L'introduction des paramètres induit la nécessité de se protéger contre l'injection de SQL malveillant.
+Les paramètres pagination ajoute de la complexité dans la gestion de l'affichage des données.
+
+=== Niveau de complexité 3
+
+* Accès à la base de données en écriture avec paramètres avec plusieurs opérations devant s'exécuter dans le cadre d'une transaction.
+
+L'introduction de la gestion des transactions et des erreurs caractérisent ce niveau de complexité.
+
+== Création de la ressource "supportive information"
+
+Une ou plusieurs sections correspondent aux niveaux de complexité à traiter conformémant à l'esprit de 4CID.
+
+NOTE: Le support de cours existait déjà à peu de choses près. Il a été repris pour suivre la progression en complexité des tâches identifiées. 
