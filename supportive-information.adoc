@@ -4,7 +4,7 @@
 :toc: left
 :sectnums:
 
-ifdef::backend-html5,env-github[]
+ifdef::backend-html5[]
 ++++
 include::licence.html[]
 ++++
