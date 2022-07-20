@@ -25,7 +25,7 @@ Dans les 2 cas, c'est la même démarche : connexion à la base, conception et e
 * Accès à la base de données en lecture seule avec paramètres (pagination et autres)
 * Accès à la base de données en écriture avec une seule opération avec paramètre
 
-L'introduction des paramètres induit la nécessité de se protéger contre l'injection de SQL malveillant.
+L'introduction des paramètres induit la nécessité de se protéger contre l'injection de SQL malveillant (énoncés préparés).
 Les paramètres pagination ajoute de la complexité dans la gestion de l'affichage des données.
 
 === Niveau de complexité 3
@@ -39,3 +39,5 @@ L'introduction de la gestion des transactions et des erreurs caractérisent ce n
 Une ou plusieurs sections correspondent aux niveaux de complexité à traiter conformémant à l'esprit de 4CID.
 
 NOTE: Le support de cours existait déjà à peu de choses près. Il a été repris pour suivre la progression en complexité des tâches identifiées. 
+
+NOTE: L'idée est de ne donner accès à l'apprenant la partie de la ressource avant que celui ci n'ait atteint le niveau de complexité correspondant. Trigger dans G4S-Auto...
