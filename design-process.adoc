@@ -4,6 +4,14 @@
 :toc: left
 :sectnums:
 
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 == Indentification des tâches 
 
 L'obbjectif de cette unité d'enseignement est de faire monter en compétence les étudiants sur la capacité à utiliser SQL depuis une application.
