@@ -49,3 +49,7 @@ Une ou plusieurs sections correspondent aux niveaux de complexité à traiter co
 NOTE: Le support de cours existait déjà à peu de choses près. Il a été repris pour suivre la progression en complexité des tâches identifiées. 
 
 NOTE: L'idée est de ne donner accès à l'apprenant la partie de la ressource avant que celui ci n'ait atteint le niveau de complexité correspondant. Trigger dans G4S-Auto...
+
+== Création des tâches
+
+Afin de pouvoir disposer de plusieurs niveau de guidage et support sur chaque tâches, pour chaque niveau de complexité, 4 cas d'utilisation différents ont été développés. 
